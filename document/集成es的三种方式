@@ -1,0 +1,42 @@
+SpringBoot整合ES的三种方式（API、REST Client、Data-ES）
+
+1、api 官方已经明确表示在ES 7.0版本中将弃用TransportClient客户端
+       <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+2、使用REST Clinet
+      上面的案例1是基于TCP和ES通信的(而且TransPort将来会被抛弃……)，官方也给出了基于HTTP的客户端REST Client(推荐使用)，
+      官方给出来的REST Client有Java Low Level REST Client和Java Hight Level REST Client两个，前者兼容所有版本的ES，
+      后者是基于前者开发出来的，只暴露了部分API，待完善。
+      使用Java Low Level REST Client，有如下的一些特点：
+
+      最小化依赖；
+      提供跨所有可用节点的负载平衡；
+      提供节点故障和特定响应代码时的故障转移；
+      提供失败重连的惩罚机制(是否对一个连接失败的节点尝试重连，取决于它连续失败的次数，尝试重连且失败的次数越多，客户端在再次尝试重连这个节点时等的时间就越长。说那么多，太复杂了，其实给一个场景就是：我找你玩儿，你不答应，我伤自尊了，下次去找你我隔了一个星期再去找你，你又不答应，我又伤自尊了，下次再找你的话，那我就隔两个星期，依次类推)；
+      持久连接；
+      跟踪请求和响应的日志记录；
+      可选的集群节点自动发现功能；
+
+  3、使用Spring-data-es
+
+     除了上述方式，Spring也提供了本身基于SpringData实现的一套方案spring-data-elasticsearch，版本之间的搭配建议为：
+    spring data  	elasticsearch
+    3.1.x 	        6.2.2
+    3.0.x 	        5.5.0
+    2.1.x         	2.4.0
+    2.0.x         	2.2.0
+    1.3.x         	1.5.2
+    实现方式：
+    1、继承 ElasticsearchRepository 类   ElasticsearchRepository接口与JpaRepository同理
+          a、使用时可根据方法名称自动生成 ES Query语句
+          b、QueryBuilder
+          c、@Query之定义查询
+    简单操作可使用该接口提供的方法（包括page,sort）
+    2、简单的查询和条件查询可以直接使用ElasticsearchRepository提供的接口，如果需要复杂的条件组合
+        （模糊查询，完全匹配查 询，分页，排序）使用ElasticSearchTemplate实例，
+            它一般最常用的方法是queryForList(SearchQuery query, Class<T> clazz)，
+
+

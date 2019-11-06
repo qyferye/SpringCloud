@@ -1,0 +1,11 @@
+com\cloud\api\config\security\test\ErrorPageConfig.class
+com\cloud\api\controller\IgnoreController.class
+com\cloud\api\config\security\test\SecurityConfig.class
+com\cloud\ApiApplication.class
+com\cloud\api\config\security\test\ErrorPageConfig$1.class
+com\cloud\api\controller\SecurityController.class
+com\cloud\api\controller\ApiController.class
+com\cloud\api\config\security\test\MyPasswordEncoder.class
+com\cloud\api\controller\ProductController.class
+com\cloud\api\config\security\WebSecurityConfig.class
+com\cloud\api\config\security\swagger\Swagger2Config.class

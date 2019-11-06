@@ -1,0 +1,217 @@
+# 配置文件加密key 生产环境中可通过环境变量、命令行等形式进行设置加密数据库密码
+#jasypt:
+#  encryptor:
+#    password: xboot
+server:
+  port: 8888
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 100
+    min-spare-threads: 30
+
+spring:
+  application:
+    name: cloud-api
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      enabled: true
+  jackson:
+    time-zone: GMT+8
+    serialization:
+      fail-on-empty-beans: false
+  boot:
+    admin:
+      client:
+        url: http://127.0.0.1:9090
+#  boot:
+#    admin:
+#      # 修改上下文路径
+#      context-path: /xboot/admin
+#      client:
+#        url: http://127.0.0.1:${server.port}/xboot/admin
+  profiles:
+    active: dev
+  #数据源
+  datasource:
+    url: jdbc:mysql://10.0.4.57:3306/dusto_pay?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&netTimeoutForStreamingResults=0&useTimezone=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+    username: pay
+    password: '!Dusto123'
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      # 自动提交
+      auto-commit: true
+      connection-test-query: SELECT 1
+      # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 默认:30秒
+      # 生产环境 connect-time 10 s
+      connection-timeout: 9000
+      # 一个连接idle状态的最大时长（毫秒），超时则被释放（retired），默认:10分钟
+      idle-timeout: 600000
+      # 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），默认:30分钟 1800000ms，建议设置比数据库超时时长少60秒，参考MySQL wait_timeout 7200s 参数（# 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），默认:30分钟 1800000ms，建议设置比数据库超时时长少60秒，参考MySQL wait_timeout参数（show variables like '%timeout%';） -->  ） -->
+      max-lifetime: 1800000
+      # 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
+      maximum-pool-size: 15
+      # 最小连接数
+      minimum-idle: 10
+      # 连接池名字
+      pool-name: DemoHikariCP
+##    ddl
+#    schema: classpath:db/ddl.sql
+##    dml
+#    data: classpath:db/dml.sql
+#    initialization-mode: always
+  cache:
+    type: redis
+  #    redis
+  redis:
+    # 数据库设置
+    cluster:
+      nodes: 10.0.4.18:7000,10.0.4.18:7001,10.0.4.18:7002
+      max-redirects: 5
+    lettuce:
+      pool:
+        # 连接池中的最大空闲连接，默认值是8
+        max-idle: 100
+        # 如果赋值为-1，则表示不限制
+        max-wait: 2000
+        # 连接池中的最小空闲连接，默认值是0
+        min-idle: 50
+#    password: redis
+#    port: 6379
+#    timeout: 3000
+#  secondaryRedis:
+#    cluster:
+#      nodes: 192.168.131.118:4883,192.168.131.118:4884,192.168.131.118:4885
+#    password: advfafasfsa
+
+# 缓存时长，单位秒
+cache:
+  default-exp: 72
+
+
+
+
+mybatis-plus:
+  # MyBaits 别名包扫描路径，通过该属性可以给包中的类注册别名
+  type-aliases-package: com.cloud.dao.entity.CloudUser
+    # 该配置请和 typeAliasesPackage 一起使用，如果配置了该属性，则仅仅会扫描路径下以该类作为父类的域对象 。
+  type-aliases-super-type: java.lang.Object
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 驼峰下划线转换
+    map-underscore-to-camel-case: true
+    # 配置的缓存的全局开关
+    cache-enabled: true
+    # 延时加载的开关
+    lazy-loading-enabled: true
+    # 开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    multiple-result-sets-enabled: true
+    use-generated-keys: true
+    default-statement-timeout: 60
+    default-fetch-size: 100
+
+# 忽略鉴权url
+ignored:
+  urls:
+    - /ignore/**
+    - /swagger-ui.html
+    - /swagger-resources/**
+    - /swagger/**
+    - /**/v2/api-docs
+    - /**/*.js
+    - /**/*.css
+    - /**/*.png
+    - /**/*.ico
+
+# Swagger界面内容配置
+swagger:
+  title: Cloud API接口文档
+  description: Cloud Api Documentation
+  version: 1.0.0
+  termsOfServiceUrl: https://www.baidu.com/
+  contact:
+    name: cloud
+    url: https://www.baidu.com/
+    email: 18667918521@163.com
+
+logging:
+  config: classpath:logback-spring.xml
+#  level:
+#    com.cloud.dao: debug
+logback:
+  logFileDir: D:/cloudLog/logs/
+  logFile: api
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xboot:
+  # 全局限流
+  ratelimit:
+    enable: true
+    # 每1秒内
+    timeout: 1000
+    # 总限制100个请求
+    limit: 100
+  # IP限流
+  iplimit:
+    enable: true
+    # 每1秒内
+    timeout: 1000
+    # 每个ip限制20个请求
+    limit: 20
+  # token交互方式
+  token:
+    # 设置为true后，token将存入redis，并具有单点登录功能 默认false使用JWT交互
+    redis: false
+    # 是否开启单设备登陆 仅当token交互方式为redis时生效
+    sdl: false
+    # token中存储用户权限数据 设为true开启后可避免每次请求再获取用户权限，但有可能导致编辑权限菜单后无法读取到最新权限数据（需用户重新登录）
+    storePerms: false
+    # token过期时间（分钟）
+    tokenExpireTime: 60
+    # 用户选择保存登录状态对应token过期时间（天）
+    saveLoginTime: 7
+    # 限制用户登陆错误次数（次）
+    loginTimeLimit: 10
+    # 错误超过次数后多少分钟后才能继续登录（分钟）
+    loginAfterTime: 10
+    username: username
+    password: password
+  # 日志记录方式 true使用Elasticsearch记录 false记录至数据库中
+  logRecord:
+    es: false
+
+# 需要验证码校验的接口路径 支持通配符 自动过滤拦截校验 无需开发人员再次校验
+captcha:
+  # 图片验证码验证
+  image:
+    - /xboot/login # 登录接口

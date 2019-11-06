@@ -1,0 +1,1 @@
+INSERT INTO `dusto_pay`.`cloud_user`(`ID`,`USER_NAME`, `IS_DELETED`, `CREATED_BY`, `UPDATED_BY`, `DATE_CREATED`, `DATE_UPDATED`, `REMARK`) VALUES (1,'温州*云和二店', 0, 'sys', 'system', '2018-05-18 16:18:54.000000', '2019-03-19 16:52:48.558000', '温州*云和二店');

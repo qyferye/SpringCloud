@@ -1,0 +1,2 @@
+com\cloud\dao\entity\CloudUser.class
+com\cloud\dao\mapper\CloudUserMapper.class

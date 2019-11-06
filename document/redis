@@ -1,0 +1,53 @@
+Redis 三大客户端
+简介
+
+Jedis：是Redis 老牌的Java实现客户端，提供了比较全面的Redis命令的支持，
+
+Redisson：实现了分布式和可扩展的Java数据结构。
+
+Lettuce：高级Redis客户端，用于线程安全同步，异步和响应使用，支持集群，Sentinel，管道和编码器。
+优点：
+
+Jedis：比较全面的提供了Redis的操作特性
+
+Redisson：促使使用者对Redis的关注分离，提供很多分布式相关操作服务，例如分布式锁，分布式集合，可通过Redis支持延迟队列
+
+Lettuce：主要在一些分布式缓存框架上使用比较多
+可伸缩：
+
+Jedis：使用阻塞的I/O，且其方法调用都是同步的，程序流需要等到sockets处理完I/O才能执行，不支持异步。Jedis客户端实例不是线程安全的，所以需要通过连接池来使用Jedis。
+
+Redisson：基于Netty框架的事件驱动的通信层，其方法调用是异步的。Redisson的API是线程安全的，所以可以操作单个Redisson连接来完成各种操作
+
+Lettuce：基于Netty框架的事件驱动的通信层，其方法调用是异步的。Lettuce的API是线程安全的，所以可以操作单个Lettuce连接来完成各种操作
+pipeline 的支持
+
+jedis 通过一定的改造后可以支持pipeline, 具体可以看 Redis 批量操作之 pipeline
+但是 Lettuce 的pipeline行为很奇怪. 在 Spring RedisTemplate 中的 executePipelined 方法中的情况:
+
+    有时完全是一条一条命令地发送
+
+    有时全合并几条命令发送
+
+    但跟完全 pipeline 的方式不同, 测试多次, 但没发现有一次是完整 pipeline 的
+
+所以如果需要使用pipeline的话, 建议还是使用Jedis
+
+
+
+缓存注解：
+    @Cacheable ：对方法结果进行缓存（主要用于GET方法）
+        cacheNames/value:指定缓存主键（Cache）的名字
+        key:缓存数据使用key，支持spEl语法
+        keyGenerator:key的生成器。与key属性冲突，自定义 keyGenerator 必须实现org.springframework.cache.interceptor.KeyGenerator,default使用默认的参数值生成器
+        cacheManager:指定缓存管理器，或者cacheResolver指定获取解析器
+        cacheResolver: 与CacheManager冲突
+        condition：指定条件满足才缓存，与unless相反。可以使用spEL语法
+        unless：否定缓存，当满足条件时，结果不被缓存。可以获取到结果（#result）进行判断。支持spEL语法
+        sync：是否异步模式。在该模式下unless不被支持。default=false
+    @CachePut:先调用方法，在对结果进行缓存。（主要用于PUT方法），需要注意key的设置
+    @CacheEvict:默认先调用方法，在删除缓存（主要用于DELETE方法）
+        allEntries: 删除缓存组件中（cacheNames/value指定）所有的值
+        beforeInvocation：在方法执行之前删除值，default=false
+    @Caching：组合注解。针对复杂情况
+    @CacheConfig：加载类上，用于设置缓存的共有属性

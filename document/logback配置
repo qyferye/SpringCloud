@@ -1,0 +1,56 @@
+Logback是由log4j创始人设计的又一个开源日志组件。logback当前分成三个模块：logback-core,logback- classic和logback-access。
+logback-core是其它两个模块的基础模块。logback-classic是log4j的一个 改良版本。
+此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日志系统如log4j或JDK14 Logging。logback-access访问模块与Servlet容器集成提供通过Http来访问日志的功能。
+Slf4j是The Simple Logging Facade for Java的简称，是一个简单日志门面抽象框架，它本身只提供了日志Facade API和一个简单的日志类实现，一般常配合Log4j，LogBack，java.util.logging使用。Slf4j作为应用层的Log接入时，
+程序可以根据实际应用场景动态调整底层的日志实现框架(Log4j/LogBack/JdkLog...)；
+LogBack和Log4j都是开源日记工具库，LogBack是Log4j的改良版本，比Log4j拥有更多的特性，同时也带来很大性能提升。
+
+
+springBoot 默认使用Logback
+默认配置
+如果配置文件 logback-test.xml 和 logback.xml 都不存在，那么 logback 默认地会调用BasicConfigurator ，创建一个最小化配置。最小化配置由一个关联到根 logger 的ConsoleAppender 组成。
+输出用模式为%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n 的 PatternLayoutEncoder 进行格式化。root logger 默认级别是 DEBUG。
+
+Logback默认配置步骤：
+①. 尝试在 classpath 下查找文件 logback-test.xml；
+②. 如果文件不存在，则查找文件 logback.xml；
+③. 如果两个文件都不存在，logback 用 Bas icConfigurator 自动对自己进行配置，这会导致记录输出到控制台。
+
+
+官方推荐使用的xml名字的格式为：logback-spring.xml而不是logback.xml，至于为什么，因为带spring后缀的可以使用<springProfile>这个标签。
+如下切换不同环境不同的日志输出级别
+ <!--生产环境:输出到文件-->
+    <!--<springProfile name="pro">-->
+        <!--<root level="info">-->
+            <!--<appender-ref ref="CONSOLE" />-->
+            <!--<appender-ref ref="DEBUG_FILE" />-->
+            <!--<appender-ref ref="INFO_FILE" />-->
+            <!--<appender-ref ref="ERROR_FILE" />-->
+            <!--<appender-ref ref="WARN_FILE" />-->
+        <!--</root>-->
+    <!--</springProfile>-->
+
+
+SpringBoot logback从配置中心读取属性：
+logback.xml加载早于application.yml，如果直接通过${参数key}的形式获取是无法获取到对应参数值的。
+解决的方法是：
+<springProperty scope="context" name="mongo.host" source="spring.data.mongodb.host"/>
+  name:变量名  通过${参数key}的形式获取     source：yml或者properties属性
+
+
+子节点<logger>：用来设置某一个包或具体的某一个类的日志打印级别、以及指定<appender>。<logger>仅有一个name属性，一个可选的level（默认集成root的级别）和一个可选的addtivity属性（默认true即向root传递）。
+　　　　name: 用来指定受此loger约束的某一个包或者具体的某一个类。
+　　　　level: 用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL和OFF，还有一个特殊值INHERITED或者同义词NULL，代表强制执行上级的级别。 如果未设置此属性，那么当前loger将会继承上级的级别。
+　　　　addtivity: 是否向上级logger传递打印信息。默认是true。可以包含零个或多个<appender-ref>元素，标识这个appender将会添加到这个logger
+		可以包含零个或多个<appender-ref>元素，标识这个appender将会添加到这个logger。
+		<logger name="com.xx.xx.x" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+子节点<root>:它也是<logger>元素，但是它是根loger,是所有<loger>的上级。只有一个level属性，因为name已经被命名为"root",且已经是最上级了。
+　　　　level: 用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL和OFF，不能设置为INHERITED或者同义词NULL。 默认是DEBUG。
+				同<loggert>一样，可以包含零个或多个<appender-ref>元素，标识这个appender将会添加到这个logger。
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="INFO_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
