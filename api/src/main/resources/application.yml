@@ -88,9 +88,17 @@ spring:
 #      nodes: 192.168.131.118:4883,192.168.131.118:4884,192.168.131.118:4885
 #    password: advfafasfsa
 
-# 缓存时长，单位秒
-cache:
-  default-exp: 72
+
+  data:
+    #
+    # elasticsearch
+    #
+    elasticsearch:
+      cluster-nodes: 10.0.4.8:9300,10.0.4.9:9300,10.0.4.10:9300
+      cluster-name: es
+      repositories:
+        enabled: true
+
 
 
 

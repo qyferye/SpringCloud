@@ -32,11 +32,53 @@ SpringBoot整合ES的三种方式（API、REST Client、Data-ES）
     实现方式：
     1、继承 ElasticsearchRepository 类   ElasticsearchRepository接口与JpaRepository同理
           a、使用时可根据方法名称自动生成 ES Query语句
-          b、QueryBuilder
-          c、@Query之定义查询
+          b、@Query之定义查询  太麻烦不好用
+          c、QueryBuilder+   ElasticsearchRepository的search方法
     简单操作可使用该接口提供的方法（包括page,sort）
     2、简单的查询和条件查询可以直接使用ElasticsearchRepository提供的接口，如果需要复杂的条件组合
         （模糊查询，完全匹配查 询，分页，排序）使用ElasticSearchTemplate实例，
             它一般最常用的方法是queryForList(SearchQuery query, Class<T> clazz)，
 
 
+
+TermsBuilder: 构造聚合函数
+
+AggregationBuilders: 创建聚合函数工具类
+
+BoolQueryBuilder: 拼装连接(查询)条件
+
+QueryBuilders: 简单的静态工厂”导入静态”使用。主要作用是查询条件(关系),如区间\精确\多值等条件
+
+NativeSearchQueryBuilder: 将连接条件和聚合函数等组合
+
+SearchQuery:生成查询
+
+elasticsearchTemplate.query:进行查询
+
+Aggregations:Represents a set of computed addAggregation.代表一组添加聚合函数统计后的数据
+
+
+
+QueryBuilders 方法介绍
+    QueryBuilder boolQueryBuilder = QueryBuilders.boolQuery(); // bool语句的封装 组合语句 and not or
+    QueryBuilders.termQuery(null,null); //精确查询 完全匹配
+    QueryBuilders.termsQuery(null,1,2); // 精确查询 批量匹配
+    QueryBuilders.matchQuery(null,null); //单个匹配 field不支持通配符, 前缀具高级特性
+    QueryBuilders.matchAllQuery(); //查询所有
+    QueryBuilders.multiMatchQuery("text","",""); //匹配多个字段, field有通配符忒行
+    QueryBuilders.idsQuery(); //根据id查询
+    QueryBuilders.constantScoreQuery(boolQueryBuilder).boost(12.12f); //包裹查询, 高于设定分数, 不计算相关性
+    QueryBuilders.disMaxQuery(); // 对子查询的结果做union, score沿用子查询score的最大值,
+    QueryBuilders.fuzzyQuery("",""); //模糊查询 不能用通配符
+    QueryBuilders.moreLikeThisQuery(new String[2]); //基于内容的查询
+    QueryBuilders.boostingQuery();//它接受一个positive查询和一个negative查询。只有匹配了positive查询的文档才会被包含到结果集中，但是同时匹配了negative查询的文档会被降低其相关度，通过将文档原本的_score和negative_boost参数进行相乘来得到新的_score
+    QueryBuilders.functionScoreQuery(); //根据权重分查询
+    QueryBuilders.rangeQuery(); //范围查询
+    QueryBuilders.spanNearQuery() //跨度查询
+    QueryBuilders.wildcardQuery("user", "ki*hy") //通配符查询
+    QueryBuilders.nestedQuery() //嵌套查询
+
+
+
+这里说一个bug，如果有redis你可能会抛异常，我这里是在启动类里配置了这么一行
+System.setProperty("es.set.netty.runtime.available.processors", "false");
