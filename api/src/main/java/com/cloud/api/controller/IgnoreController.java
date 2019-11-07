@@ -6,6 +6,7 @@ import com.cloud.core.dto.DefaultResult;
 import com.cloud.core.dto.Result;
 import com.cloud.core.dto.User;
 import com.cloud.core.exception.BusinessException;
+import com.cloud.core.properties.TestPropertySource;
 import com.cloud.dao.entity.CloudUser;
 import com.cloud.service.CloudUserService;
 import io.swagger.annotations.Api;
@@ -33,8 +34,8 @@ public class IgnoreController {
 
     @ApiOperation(value = "测试入口")
     @PostMapping(value = "/noLogin")
-    public Result<String> noLogin(String name){
-        int i=1/0;
+    public Result<String> noLogin(String name) {
+        int i = 1 / 0;
         log.info(name);
         return new ResultUtil<String>().setSuccessMsg("欢迎cloud！");
     }
@@ -47,48 +48,46 @@ public class IgnoreController {
         log.debug("debug");
         log.error("error");
         log.warn("warn");
-       throw new BusinessException(DefaultResultEnum.TEST);
+        throw new BusinessException(DefaultResultEnum.TEST);
     }
 
     @ApiOperation(value = "测试getUser")
     @PostMapping(value = "/getUser")
-    public DefaultResult<CloudUser> getUser(@RequestParam("id") String id){
+    public DefaultResult<CloudUser> getUser(@RequestParam("id") String id) {
         CloudUser cloudUser = cloudUserService.getById(id);
         return DefaultResult.success(cloudUser);
     }
 
     @ApiOperation(value = "测试updateUser")
     @PostMapping(value = "/updateUser")
-    public DefaultResult<Boolean> updateUser(@RequestBody CloudUser cloudUser){
+    public DefaultResult<Boolean> updateUser(@RequestBody CloudUser cloudUser) {
         boolean result = cloudUserService.updateById(cloudUser);
         return DefaultResult.success(result);
     }
 
     @ApiOperation(value = "测试insertUser")
     @PostMapping(value = "/insertUser")
-    public DefaultResult<Integer> insertUser(@RequestBody CloudUser cloudUser){
+    public DefaultResult<Integer> insertUser(@RequestBody CloudUser cloudUser) {
         int result = cloudUserService.insertUser(cloudUser);
         return DefaultResult.success(result);
     }
 
 
-
     @ApiOperation(value = "测试redis")
     @PostMapping(value = "/redisSet")
-    public DefaultResult<CloudUser> redisSet(@RequestParam("id") String id){
+    public DefaultResult<CloudUser> redisSet(@RequestParam("id") String id) {
         User u = new User();
         u.setUsername("hehehehehhehe");
-        redisTemplate.opsForValue().set("testCloud",u);
+        redisTemplate.opsForValue().set("testCloud", u);
         return DefaultResult.success();
     }
+
     @ApiOperation(value = "测试redis")
     @PostMapping(value = "/redisGet")
-    public DefaultResult<User> redisGet(@RequestParam("id") String id){
+    public DefaultResult<User> redisGet(@RequestParam("id") String id) {
         User result = (User) redisTemplate.opsForValue().get("testCloud");
         return DefaultResult.success(result);
     }
-
-
 
     @ApiOperation(value = "测试异步")
     @PostMapping("/testAsnc")
@@ -105,6 +104,23 @@ public class IgnoreController {
         };
         log.info("主线程返回");
         return result;
+        //return inventoryRangeService.setCategoryRange(ehpapi.getRequestData());
+    }
+
+    @Autowired
+    private TestPropertySource testPropertySource;
+
+    @ApiOperation(value = "测试property")
+    @PostMapping("/getProperty")
+    public DefaultResult<String> property() {
+        String lj = testPropertySource.getLj();
+        String zzl = testPropertySource.getZzl();
+        String ckl = testPropertySource.getCkl();
+
+        log.info(lj+"------------------");
+        log.info(zzl+"-------------------");
+        log.info(ckl+"---------------------");
+        return DefaultResult.success(lj);
         //return inventoryRangeService.setCategoryRange(ehpapi.getRequestData());
     }
 
