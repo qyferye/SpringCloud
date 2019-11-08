@@ -112,6 +112,11 @@
             <artifactId>spring-data-elasticsearch</artifactId>
             <version>3.1.11.RELEASE</version>
         </dependency>-->
+        <!--rabbitmq-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
 
     </dependencies>
 

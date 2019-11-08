@@ -51,3 +51,24 @@ jedis 通过一定的改造后可以支持pipeline, 具体可以看 Redis 批量
         beforeInvocation：在方法执行之前删除值，default=false
     @Caching：组合注解。针对复杂情况
     @CacheConfig：加载类上，用于设置缓存的共有属性
+
+
+数据类型：
+
+string
+是 redis 最基本的类型，你可以理解成与 Memcached 一模一样的类型，一个 key 对应一个 value。
+
+
+
+Hash（哈希）
+Redis hash 是一个键值(key=>value)对集合。 key  field1 value   filed2 value
+Redis hash 是一个 string 类型的 field 和 value 的映射表，hash 特别适合用于存储对象。
+
+list 操作 有序  不唯一  lpush + lpop  实现 栈stack  功能    lpush + rpop 实现 队列queue 功能  lpush + ltrim  定长集合collection 功能    lpush + brpop  实现消息队列功能
+
+set 操作  无序  唯一  空了之后key自动删除              srandmember/spop  做抽奖 	   sadd 做标签       sadd + sinter  共同关注
+	sadd  key value 增加    srem key  删除
+
+
+zset  操作  有序  唯一
+zadd  key score  value  添加值

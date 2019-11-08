@@ -100,6 +100,15 @@ spring:
         enabled: true
 
 
+#rabbitMQ
+  rabbitmq:
+    address: 10.0.4.14:5672,10.0.4.18:5672,10.0.4.19:5672
+    username: mq
+    password: mq
+    virtual-host: /
+    port: 5672
+
+
 
 
 
