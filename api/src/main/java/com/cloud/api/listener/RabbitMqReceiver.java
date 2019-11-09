@@ -31,7 +31,7 @@ public class RabbitMqReceiver {
         String bodyMsg = getMsg(message.getBody());
         RabbitMqMsgDto rabbitMqMsgDto= Json.readVal(bodyMsg, RabbitMqMsgDto.class);
         try {
-            System.out.println(RabbitMqInit.QUEUE_DIRECT_CLOUD+"【监听到消息】" + rabbitMqMsgDto+"-----------并进行手动确认");
+            System.out.println(RabbitMqInit.QUEUE_DIRECT_CLOUD+"【监听到消息】" + rabbitMqMsgDto);
 
             //手动确认在异常前，即使有异常也会确认，造成消息丢失，所以确认方法应放在最后
             int i = 1/0;
@@ -42,7 +42,9 @@ public class RabbitMqReceiver {
         } catch (Exception e) {
 
             try {
-                System.out.println("-----处理消息失败----");
+
+                //此处可以按照实际情况处理： 比如持久化到数据库、配置死信队列进行接收 。。。
+                System.out.println(RabbitMqInit.QUEUE_DIRECT_CLOUD +"-----正常队列处理消息失败----开始发送到死信队列");
                 //deliveryTag:该消息的index
                 //multiple：是否批量.true:将一次性拒绝所有小于deliveryTag的消息。
                 //requeue：被拒绝的是否重新入队列
@@ -54,7 +56,7 @@ public class RabbitMqReceiver {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -62,23 +64,54 @@ public class RabbitMqReceiver {
     public void receiveDirect2(Message message, Channel channel) {
         String bodyMsg = getMsg(message.getBody());
         RabbitMqMsgDto rabbitMqMsgDto= Json.readVal(bodyMsg, RabbitMqMsgDto.class);
-          try {
-              System.out.println(RabbitMqInit.QUEUE_DIRECT_CLOUD+"【监听到消息】" + rabbitMqMsgDto+"-----------并进行手动确认");
+        try {
+            System.out.println(RabbitMqInit.QUEUE_DIRECT_CLOUD+"【监听到消息】" + rabbitMqMsgDto);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
-              try {
-                  System.out.println("-----处理消息失败----");
-                  //deliveryTag:该消息的index
-                  //multiple：是否批量.true:将一次性拒绝所有小于deliveryTag的消息。
-                  //requeue：被拒绝的是否重新入队列
-                  channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
-                  // deliveryTag:该消息的index
-                  //  requeue：被拒绝的是否重新入队列
-                  // channel.basicNack 与 channel.basicReject 的区别在于basicNack可以拒绝多条消息，而basicReject一次只能拒绝一条消息
-                  // channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
-              } catch (IOException ex) {
-                  ex.printStackTrace();
-              }
+            try {
+
+                //此处可以按照实际情况处理： 比如持久化到数据库、配置死信队列进行接收 。。。
+                System.out.println(RabbitMqInit.QUEUE_DIRECT_CLOUD + "-----正常队列处理消息失败----开始发送到死信队列");
+
+                //deliveryTag:该消息的index
+                //multiple：是否批量.true:将一次性拒绝所有小于deliveryTag的消息。
+                //requeue：被拒绝的是否重新入队列
+                channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+                // deliveryTag:该消息的index
+                //  requeue：被拒绝的是否重新入队列
+                // channel.basicNack 与 channel.basicReject 的区别在于basicNack可以拒绝多条消息，而basicReject一次只能拒绝一条消息
+                // channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @RabbitListener(queues = RabbitMqInit.QUEUE_DEAD_CLOUD)
+    public void receiveDead(Message message, Channel channel) {
+        String bodyMsg = getMsg(message.getBody());
+        RabbitMqMsgDto rabbitMqMsgDto= Json.readVal(bodyMsg, RabbitMqMsgDto.class);
+        try {
+            System.out.println(RabbitMqInit.QUEUE_DEAD_CLOUD+"【死信队列监听到消息】" + rabbitMqMsgDto);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        } catch (Exception e) {
+            try {
+
+                //此处可以按照实际情况处理： 比如持久化到数据库、配置死信队列进行接收 。。。
+                System.out.println(RabbitMqInit.QUEUE_DEAD_CLOUD+"-----死信队列处理消息失败----");
+
+                //deliveryTag:该消息的index
+                //multiple：是否批量.true:将一次性拒绝所有小于deliveryTag的消息。
+                //requeue：被拒绝的是否重新入队列
+                channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+                // deliveryTag:该消息的index
+                //  requeue：被拒绝的是否重新入队列
+                // channel.basicNack 与 channel.basicReject 的区别在于basicNack可以拒绝多条消息，而basicReject一次只能拒绝一条消息
+                // channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
@@ -91,5 +124,7 @@ public class RabbitMqReceiver {
         String bodyMsg = new String(body, StandardCharsets.UTF_8);
         return bodyMsg;
     }
+
+
 }
 

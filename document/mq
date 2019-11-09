@@ -56,3 +56,21 @@ RabbitMQ提供了6种模式，分别是HelloWorld(一对一)，Work Queue，Publ
 消息被拒绝。通过调用basic.reject或者basic.nack并且设置的requeue参数为false。
 消息因为设置了TTL而过期。
 消息进入了一条已经达到最大长度的队列。
+
+
+
+producer——》mq：
+rabbitmq 整个消息投递的路径为：
+producer->rabbitmq broker cluster->exchange->queue->consumer
+
+message 从 producer 到 rabbitmq broker cluster 则会返回一个 confirmCallback 。
+message 从 exchange->queue 投递失败则会返回一个 returnCallback 。我们将利用这两个 callback 控制消息的最终一致性和部分纠错能力。
+
+
+1、 在本地缓存已发送的 message，通过 confirmCallback 或者被确认的 ack，将被确认的message从本地删除 定时扫描本地的message，如果大于一定时间未被确认，则重发  前提是 消费端进行幂等处理一个消息可以接受多次。
+2、使用RepublishMessageRecoverer这个MessageRecoverer会发送发送消息到指定队列
+3、给队列绑定死信队列，因为默认的RepublishMessageRecoverer会发送nack并且requeue为false。这样抛出一场是这种方式和上面的结果一样都是转发到了另外一个队列。详见DeadLetterConsumer
+4、注册自己实现的MessageRecoverer
+5、给MessageListenerContainer设置RecoveryCallback
+6、对于方法手动捕获异常，进行处理
+7、最安全的做法是是使用事务，但是这样效率就会很低，每秒钟处理的message在几百条左右。对于高性能的 mq 来说是非常不可取的。

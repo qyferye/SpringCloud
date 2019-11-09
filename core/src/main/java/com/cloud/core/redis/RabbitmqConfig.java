@@ -108,13 +108,14 @@ import org.springframework.context.annotation.Scope;
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-                log.info("消息发送成功:correlationData({}),ack({}),cause({})",correlationData,ack,cause);
+                log.info("producer——》broker消息发送到MQ成功:correlationData({}),ack({}),cause({})",correlationData,ack,cause);
             }
         });
         rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
             @Override
             public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-                log.info("消息丢失:exchange({}),route({}),replyCode({}),replyText({}),message:{}",exchange,routingKey,replyCode,replyText,message);
+                /**此处要对消息进行处理，否则会丢失消息*/
+                log.info("producer——》broker消息发送到MQ丢失:exchange({}),route({}),replyCode({}),replyText({}),message:{}",exchange,routingKey,replyCode,replyText,message);
             }
         });
         return rabbitTemplate;
