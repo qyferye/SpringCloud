@@ -13,6 +13,13 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 public class RabbitMqReceiver {
+
+    /**
+     * basicNack(long deliveryTag, boolean multiple, boolean requeue)
+     * deliveryTag: 每条消息在mq内部的id,
+     * multiple: 是否批量(true：将一次性拒绝所有小于deliveryTag的消息)；
+     * requeue: 是否重新入队
+     */
     // queues是指要监听的队列的名字 当在配置rabbitTemplate时 不设置序列化器时可以直接使用类接受
    /* @RabbitListener(queues = RabbitMqInit.QUEUE_DIRECT_CLOUD)
     public void receiveDirect1(RabbitMqMsgDto msg) {
@@ -42,7 +49,8 @@ public class RabbitMqReceiver {
         } catch (Exception e) {
 
             try {
-
+                // 模拟消费者代码异常，这种情况必须在catch块设置重试次数（也可以在配置文件中全局设置重试次数），防止死循环
+                // catch块中重试可用redis的自增来做计数器，从而控制重试次数
                 //此处可以按照实际情况处理： 比如持久化到数据库、配置死信队列进行接收 。。。
                 System.out.println(RabbitMqInit.QUEUE_DIRECT_CLOUD +"-----正常队列处理消息失败----开始发送到死信队列");
                 //deliveryTag:该消息的index
@@ -53,6 +61,12 @@ public class RabbitMqReceiver {
                //  requeue：被拒绝的是否重新入队列
                // channel.basicNack 与 channel.basicReject 的区别在于basicNack可以拒绝多条消息，而basicReject一次只能拒绝一条消息
                // channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+
+
+                //channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
+                // 达到重试次数后用这行代码返回ack，并将消息存缓存
+                // channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

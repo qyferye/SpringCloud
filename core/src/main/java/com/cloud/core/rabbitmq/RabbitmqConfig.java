@@ -1,4 +1,4 @@
-package com.cloud.core.redis;
+package com.cloud.core.rabbitmq;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -14,6 +14,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @Slf4j
@@ -105,16 +107,25 @@ import org.springframework.context.annotation.Scope;
         rabbitTemplate.setMandatory(true);
         //转换json序列化
         rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        // 针对网络原因导致连接断开，利用retryTemplate重连10次
+        RetryTemplate retryTemplate = new RetryTemplate();
+        retryTemplate.setRetryPolicy(new SimpleRetryPolicy(10));
+        rabbitTemplate.setRetryTemplate(retryTemplate);
+
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                if(!ack){
+                    /*这时候需要根据实际情况对失败消息进行处理   如：把消息存到缓存，用另外线程重发。*/// 确认是否发到交换机，若没有则存缓存，用另外的线程重发，直接在里面用rabbitTemplate重发会抛出循环依赖错误
+                    log.info("producer——》broker消息发送到MQ失败:correlationData({}),ack({}),cause({})",correlationData,ack,cause);
+                }
                 log.info("producer——》broker消息发送到MQ成功:correlationData({}),ack({}),cause({})",correlationData,ack,cause);
             }
         });
         rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
             @Override
             public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-                /**此处要对消息进行处理，否则会丢失消息*/
+                /*这时候需要根据实际情况对失败消息进行处理   如：把消息存到缓存，用另外线程重发。*/
                 log.info("producer——》broker消息发送到MQ丢失:exchange({}),route({}),replyCode({}),replyText({}),message:{}",exchange,routingKey,replyCode,replyText,message);
             }
         });

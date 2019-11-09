@@ -12,11 +12,15 @@ import com.cloud.core.dto.RabbitMqMsgDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/ignore/mq")
@@ -31,13 +35,22 @@ public class RabbitMqController {
     public DefaultResult<RabbitMqMsgDto> sendMq(String data) {
         RabbitMqMsgDto rabbitMqMsgDto = new RabbitMqMsgDto();
         rabbitMqMsgDto.setMsgBody(data);
-        //发送消息到 directExchange
-        rabbitTemplate.convertAndSend(RabbitMqInit.DIRECT_EXCHANGE_CLOUD,RabbitMqInit.ROUTINGKEY_DIRECT_CLOUD,rabbitMqMsgDto);
-        System.out.println("发送消息到 directExchange");
-        //发送消息到 fanoutExchange
-        rabbitTemplate.convertAndSend(RabbitMqInit.FANOUT_EXCHANGE_CLOUD,"",rabbitMqMsgDto);
-        System.out.println("发送消息到 fanoutExchange");
-        return DefaultResult.success(rabbitMqMsgDto);
+        try {
+            //发送消息到 directExchange
+            rabbitTemplate.convertAndSend(RabbitMqInit.DIRECT_EXCHANGE_CLOUD,RabbitMqInit.ROUTINGKEY_DIRECT_CLOUD,rabbitMqMsgDto);
+            System.out.println("发送消息到 directExchange");
+            //发送消息到 fanoutExchange
+            CorrelationData correlationData = new CorrelationData();
+            String id = UUID.randomUUID().toString();
+            correlationData.setId(id);
+            rabbitTemplate.convertAndSend(RabbitMqInit.FANOUT_EXCHANGE_CLOUD,"",rabbitMqMsgDto,correlationData);
+            System.out.println("发送消息到 fanoutExchange id:"+id);
+            return DefaultResult.success(rabbitMqMsgDto);
+        } catch (AmqpException e) {//到了重连次数了，还是没连上怎么办呢？造成这种情况通常是服务器宕机等环境问题，这时候会报AmqpException，我们可以捕获这个异常，然后把消息存入缓存中。等环境正常后，做消息补发。
+        // 存缓存操作
+        System.out.println(e.getMessage() + "发送失败:原因重连10次都没连上。");
+            return DefaultResult.fail();
+        }
     }
 
 
