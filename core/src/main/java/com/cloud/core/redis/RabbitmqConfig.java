@@ -1,7 +1,6 @@
 package com.cloud.core.redis;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -10,7 +9,6 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -18,11 +16,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
+@Slf4j
     public class RabbitmqConfig {
 
-    private static final Logger log= LoggerFactory.getLogger(RabbitmqConfig.class);
- 
-   /* @Autowired
+/*    @Autowired
     private SimpleRabbitListenerContainerFactoryConfigurer factoryConfigurer;*/
 
     @Value("${spring.rabbitmq.port}")
@@ -50,32 +47,36 @@ import org.springframework.context.annotation.Scope;
         connectionFactory.setPassword(password);
         connectionFactory.setPort(port);
         connectionFactory.setVirtualHost("/");
-        connectionFactory.setPublisherConfirms(true);
-        connectionFactory.setPublisherReturns(true);
         connectionFactory.setConnectionTimeout(15000);
         //消息确认机制confirm-callback或return-callback,成功后confirm,失败后回调
         connectionFactory.setPublisherReturns(true);
         connectionFactory.setPublisherConfirms(true);
         return connectionFactory;
     }
- 
-    /**
+
+/*    *//**
      * 单一消费者
      * @return
-     */
+     *//*
     @Bean(name = "singleListenerContainer")
     public SimpleRabbitListenerContainerFactory listenerContainer(@Qualifier("connectionFactory") ConnectionFactory connectionFactory){
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        //factory.setMessageConverter(new Jackson2JsonMessageConverter());
+        factory.setAcknowledgeMode(AcknowledgeMode.NONE);
         factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
-        factory.setConcurrentConsumers(1);
-        factory.setMaxConcurrentConsumers(1);
+       // factoryConfigurer.configure(factory,connectionFactory);
+        //单台并发消费者数量
+        factory.setConcurrentConsumers(10);
+        //单台并发消费的最大消费者数量
+        factory.setMaxConcurrentConsumers(10);
+        //预取消费数量,unacked数量超过这个值broker将不会接收消息
         factory.setPrefetchCount(1);
+        //有事务时处理的消息数
         factory.setTxSize(1);
-        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
         return factory;
-    }
- 
+    }*/
+
+
     /**
      * 多个消费者
      * @return
@@ -83,12 +84,16 @@ import org.springframework.context.annotation.Scope;
     @Bean(name = "multiListenerContainer")
     public SimpleRabbitListenerContainerFactory multiListenerContainer(ConnectionFactory connectionFactory){
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        //factoryConfigurer.configure(factory,connectionFactory);
+       //factoryConfigurer.configure(factory,connectionFactory);
         factory.setMessageConverter(new Jackson2JsonMessageConverter());
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        factory.setConnectionFactory(connectionFactory);
         factory.setConcurrentConsumers(3);
         factory.setMaxConcurrentConsumers(3);
         factory.setPrefetchCount(5);
+        factory.setTxSize(1);
+        /*重试机制 见配置文件*/
+
         return factory;
     }
 
@@ -98,6 +103,8 @@ import org.springframework.context.annotation.Scope;
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMandatory(true);
+        //转换json序列化
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
@@ -111,4 +118,5 @@ import org.springframework.context.annotation.Scope;
             }
         });
         return rabbitTemplate;
-    }}
+    }
+}

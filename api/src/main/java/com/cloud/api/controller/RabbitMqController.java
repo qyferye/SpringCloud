@@ -8,6 +8,7 @@ package com.cloud.api.controller;
 
 import com.cloud.api.config.mq.RabbitMqInit;
 import com.cloud.core.dto.DefaultResult;
+import com.cloud.core.dto.RabbitMqMsgDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,16 @@ public class RabbitMqController {
 
     @ApiOperation(value = "发送mq消息")
     @PostMapping(value = "/sendMq")
-    public DefaultResult<String> sendMq() {
-        String data = "发送消息";
-        rabbitTemplate.convertAndSend(RabbitMqInit.DIRECT_EXCHANGE_TEST,RabbitMqInit.ROUTINGKEY_TEST_A,data);
-        return DefaultResult.success(data);
+    public DefaultResult<RabbitMqMsgDto> sendMq(String data) {
+        RabbitMqMsgDto rabbitMqMsgDto = new RabbitMqMsgDto();
+        rabbitMqMsgDto.setMsgBody(data);
+        //发送消息到 directExchange
+        rabbitTemplate.convertAndSend(RabbitMqInit.DIRECT_EXCHANGE_CLOUD,RabbitMqInit.ROUTINGKEY_DIRECT_CLOUD,rabbitMqMsgDto);
+        System.out.println("发送消息到 directExchange");
+        //发送消息到 fanoutExchange
+        rabbitTemplate.convertAndSend(RabbitMqInit.FANOUT_EXCHANGE_CLOUD,"",rabbitMqMsgDto);
+        System.out.println("发送消息到 fanoutExchange");
+        return DefaultResult.success(rabbitMqMsgDto);
     }
 
 

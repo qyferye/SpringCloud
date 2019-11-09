@@ -20,24 +20,47 @@ public class RabbitMqInit {
     /**
      * 队列名称
      */
-    public static final String QUEUE_TEST_A = "queue.cloud_a";
+    public static final String QUEUE_DIRECT_CLOUD = "queue.direct_cloud";
+    public static final String QUEUE_FANOUT_CLOUD = "queue.fanout_cloud";
 
 
     /**
      * 设置路由key
      */
-    public static final String ROUTINGKEY_TEST_A = "queue.cloud_a";
+    public static final String ROUTINGKEY_DIRECT_CLOUD = "queue.direct_cloud";
 
 
 
     /**
      * 交换空间名称(点对点)
      */
-    public static final String DIRECT_EXCHANGE_TEST = "exchange.direct_cloud";
+    public static final String DIRECT_EXCHANGE_CLOUD = "cloud.exchange.direct";
     /**
      * 交换空间名称(广播)
      */
-    public static final String FANOUT_EXCHANGE_TEST = "store.fanout_cloud";
+    public static final String FANOUT_EXCHANGE_CLOUD = "cloud.exchange.fanout";
+
+
+
+    /**
+     * 点对点模式 交换机
+     *
+     * @return
+     */
+    @Bean
+    public DirectExchange directExchange() {
+        return new DirectExchange(DIRECT_EXCHANGE_CLOUD, true, false);
+    }
+
+    /**
+     * 广播模式  交换机
+     *
+     * @return
+     */
+    @Bean
+    public FanoutExchange fanoutExchange() {
+        return new FanoutExchange(FANOUT_EXCHANGE_CLOUD, true, false);
+    }
 
 
     /**
@@ -45,61 +68,41 @@ public class RabbitMqInit {
      *
      * @return
      */
-    @Bean(name = "queueA")
-    public Queue queueA() {
-        return new Queue(QUEUE_TEST_A);
+    @Bean(name = "direct")
+    public Queue direct() {
+        return new Queue(QUEUE_DIRECT_CLOUD);
+    }
+
+    @Bean(name = "fanout")
+    public Queue fanout() {
+        return new Queue(QUEUE_FANOUT_CLOUD);
     }
 
 
     /**
-     * 将队列通过路由key到绑定交互机上
-     *
-     * @param directExchange
-     * @param queueA
-     * @return
-     */
+     * ----------------------------------将队列通过路由key到绑定交互机上DirectExchange-----------------------------------------------------------*/
     @Bean
-    public Binding bindingExchangeQueueA(DirectExchange directExchange, @Qualifier("queueA") Queue queueA) {
-        return BindingBuilder.bind(queueA).to(directExchange).with(ROUTINGKEY_TEST_A);
+    public Binding bindingDirectExchangeQueue(DirectExchange directExchange, @Qualifier("direct") Queue direct) {
+        return BindingBuilder.bind(direct).to(directExchange).with(ROUTINGKEY_DIRECT_CLOUD);
     }
+/**---------------------------------------------------------DirectExchange---------------------------------------------------------------**/
 
-
-
-
-    /**
-     * 将队列通过路由key到绑定交互机上(广播)
-     *
-     * @param
-     * @return
-     */
-/*
-
-    @Bean
-    public Binding bindingExchangeQueueD(FanoutExchange fanoutExchange,@Qualifier("queueA") Queue queueD) {
-        return BindingBuilder.bind(queueD).to(fanoutExchange);
-    }
-*/
 
 
 
 
     /**
-     * 点对点模式
-     *
-     * @return
-     */
+     * ----------------------------------将队列通过路由key到绑定交互机上FanoutExchange-----------------------------------------------------------*/
+
     @Bean
-    public DirectExchange directExchange() {
-        return new DirectExchange(DIRECT_EXCHANGE_TEST, true, false);
+    public Binding bindingFanoutExchangeQueue(FanoutExchange fanoutExchange, @Qualifier("fanout") Queue fanout) {
+        return BindingBuilder.bind(fanout).to(fanoutExchange);
     }
 
-    /**
-     * 广播模式
-     *
-     * @return
-     */
-    @Bean
-    public FanoutExchange fanoutExchange() {
-        return new FanoutExchange(FANOUT_EXCHANGE_TEST, true, false);
-    }
+/**---------------------------------------------------------FanoutExchange---------------------------------------------------------------**/
+
+
+
+
+
 }
