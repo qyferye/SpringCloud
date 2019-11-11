@@ -52,10 +52,10 @@ public class IgnoreController {
     @PostMapping(value = "/singleBean")
     public Result<String> singleBean() {
         System.out.println("测试多例");
-       /* System.out.println(singleBean.getPrototypeBean().equals(singleBean.getPrototypeBean()));
+        System.out.println(singleBean.getPrototypeBean().equals(singleBean.getPrototypeBean()));
         System.out.println(singleBean.getPrototypeBean().equals(singleBean2.getPrototypeBean()));
         System.out.println(singleBean.getPrototypeBean().getName());
-        System.out.println(singleBean2.getPrototypeBean().getName());*/
+        System.out.println(singleBean2.getPrototypeBean().getName());
        // System.out.println(singletonBean.getBean().equals(singletonBean.getBean()));
         for (int i=0;i<3;i++){
             singletonBean.print();
