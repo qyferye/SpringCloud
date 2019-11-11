@@ -108,19 +108,6 @@ spring:
     virtual-host: /
     port: 5672
     listener:
-      #貌似不起作用
-      direct:
-        acknowledge-mode: manual
-#        retry:
-#          enabled: true
-#          # ms
-#          initial-interval: 1000
-#          multiplier: 1
-#          max-attempts: 3
-#          max-interval: 10000
-#          stateless: true
-#        #  重试次数超过上面的设置之后是否丢弃（false不丢弃时需要写相应代码将该消息加入死信队列）
-#        default-requeue-rejected: true
       simple:
         acknowledge-mode: manual
 #        retry:
