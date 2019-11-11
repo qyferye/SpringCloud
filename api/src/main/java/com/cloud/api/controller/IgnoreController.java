@@ -1,5 +1,7 @@
 package com.cloud.api.controller;
 
+import com.cloud.api.test.beantest.SingleBean;
+import com.cloud.api.test.beantest.SingleBean2;
 import com.cloud.core.common.constant.DefaultResultEnum;
 import com.cloud.core.common.util.ResultUtil;
 import com.cloud.core.dto.DefaultResult;
@@ -31,6 +33,10 @@ public class IgnoreController {
     private CloudUserService cloudUserService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private SingleBean singleBean;
+    @Autowired
+    private SingleBean2 singleBean2;
 
     @ApiOperation(value = "测试入口")
     @PostMapping(value = "/noLogin")
@@ -39,7 +45,16 @@ public class IgnoreController {
         log.info(name);
         return new ResultUtil<String>().setSuccessMsg("欢迎cloud！");
     }
-
+    @ApiOperation(value = "测试singleBean")
+    @PostMapping(value = "/singleBean")
+    public Result<String> singleBean() {
+        System.out.println("测试多例");
+        System.out.println(singleBean.getPrototypeBean().equals(singleBean.getPrototypeBean()));
+        System.out.println(singleBean.getPrototypeBean().equals(singleBean2.getPrototypeBean()));
+        System.out.println(singleBean.getPrototypeBean().getName());
+        System.out.println(singleBean2.getPrototypeBean().getName());
+        return new ResultUtil<String>().setSuccessMsg("欢迎cloud！");
+    }
 
     @ApiOperation(value = "测试结果集")
     @PostMapping(value = "/result")
