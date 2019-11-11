@@ -2,6 +2,7 @@ package com.cloud.api.controller;
 
 import com.cloud.api.test.beantest.SingleBean;
 import com.cloud.api.test.beantest.SingleBean2;
+import com.cloud.api.test.beantest.SingletonBean;
 import com.cloud.core.common.constant.DefaultResultEnum;
 import com.cloud.core.common.util.ResultUtil;
 import com.cloud.core.dto.DefaultResult;
@@ -37,6 +38,8 @@ public class IgnoreController {
     private SingleBean singleBean;
     @Autowired
     private SingleBean2 singleBean2;
+    @Autowired
+    private SingletonBean singletonBean;
 
     @ApiOperation(value = "测试入口")
     @PostMapping(value = "/noLogin")
@@ -49,10 +52,14 @@ public class IgnoreController {
     @PostMapping(value = "/singleBean")
     public Result<String> singleBean() {
         System.out.println("测试多例");
-        System.out.println(singleBean.getPrototypeBean().equals(singleBean.getPrototypeBean()));
+       /* System.out.println(singleBean.getPrototypeBean().equals(singleBean.getPrototypeBean()));
         System.out.println(singleBean.getPrototypeBean().equals(singleBean2.getPrototypeBean()));
         System.out.println(singleBean.getPrototypeBean().getName());
-        System.out.println(singleBean2.getPrototypeBean().getName());
+        System.out.println(singleBean2.getPrototypeBean().getName());*/
+       // System.out.println(singletonBean.getBean().equals(singletonBean.getBean()));
+        for (int i=0;i<3;i++){
+            singletonBean.print();
+        }
         return new ResultUtil<String>().setSuccessMsg("欢迎cloud！");
     }
 
