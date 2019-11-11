@@ -7,6 +7,7 @@ package com.cloud.api.controller;
  */
 
 import com.cloud.api.config.mq.RabbitMqInit;
+import com.cloud.api.listener.MsgProducer;
 import com.cloud.core.dto.DefaultResult;
 import com.cloud.core.dto.RabbitMqMsgDto;
 import io.swagger.annotations.Api;
@@ -29,6 +30,8 @@ import java.util.UUID;
 public class RabbitMqController {
     @Autowired
     private RabbitTemplate rabbitTemplate;
+    @Autowired(required = false)
+    private MsgProducer msgProducer;
 
     @ApiOperation(value = "发送mq消息")
     @PostMapping(value = "/sendMq")
@@ -52,6 +55,19 @@ public class RabbitMqController {
             return DefaultResult.fail();
         }
     }
-
+    @ApiOperation(value = "发送mq消息")
+    @PostMapping(value = "/sendMqPrototype")
+    public DefaultResult<RabbitMqMsgDto> sendMqPrototype(String data) {
+        try {
+            RabbitMqMsgDto rabbitMqMsgDto = new RabbitMqMsgDto();
+            rabbitMqMsgDto.setMsgBody(data);
+            msgProducer.sendMsg(rabbitMqMsgDto);
+            return DefaultResult.success(rabbitMqMsgDto);
+        } catch (AmqpException e) {//到了重连次数了，还是没连上怎么办呢？造成这种情况通常是服务器宕机等环境问题，这时候会报AmqpException，我们可以捕获这个异常，然后把消息存入缓存中。等环境正常后，做消息补发。
+            // 存缓存操作
+            System.out.println(e.getMessage() + "发送失败:原因重连10次都没连上。");
+            return DefaultResult.fail();
+        }
+    }
 
 }
