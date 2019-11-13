@@ -162,7 +162,6 @@ public class MsgProducer implements RabbitTemplate.ConfirmCallback {
         RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(new SimpleRetryPolicy(10));
         rabbitTemplate.setRetryTemplate(retryTemplate);
-
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {

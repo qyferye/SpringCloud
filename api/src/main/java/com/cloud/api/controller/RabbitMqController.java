@@ -10,6 +10,7 @@ import com.cloud.api.config.mq.RabbitMqInit;
 import com.cloud.api.listener.MsgProducer;
 import com.cloud.core.dto.DefaultResult;
 import com.cloud.core.dto.RabbitMqMsgDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,8 @@ public class RabbitMqController {
     private RabbitTemplate rabbitTemplate;
     @Autowired(required = false)
     private MsgProducer msgProducer;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @ApiOperation(value = "发送mq消息")
     @PostMapping(value = "/sendMq")
@@ -39,6 +42,15 @@ public class RabbitMqController {
         RabbitMqMsgDto rabbitMqMsgDto = new RabbitMqMsgDto();
         rabbitMqMsgDto.setMsgBody(data);
         try {
+
+            // 消息持久化
+         /* rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+            rabbitTemplate.setExchange(RabbitMqInit.DIRECT_EXCHANGE_CLOUD);
+            rabbitTemplate.setRoutingKey(RabbitMqInit.ROUTINGKEY_DIRECT_CLOUD);
+            Message message= MessageBuilder.withBody(objectMapper.writeValueAsBytes("userLog")).setDeliveryMode(MessageDeliveryMode.PERSISTENT).build();
+            message.getMessageProperties().setHeader(AbstractJavaTypeMapper.DEFAULT_CONTENT_CLASSID_FIELD_NAME, MessageProperties.CONTENT_TYPE_JSON);
+            rabbitTemplate.convertAndSend(message);*/
+
             //发送消息到 directExchange
             rabbitTemplate.convertAndSend(RabbitMqInit.DIRECT_EXCHANGE_CLOUD,RabbitMqInit.ROUTINGKEY_DIRECT_CLOUD,rabbitMqMsgDto);
             System.out.println("发送消息到 directExchange");
