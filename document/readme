@@ -6,8 +6,57 @@
 5、集成 redis  ---------
 6、集成 es    -----------------
 7、集成 mq    ----------------------
-8、限流
+8、限流  -------------Hystrix  sentinal
 9、常用工具类封装
-10、分布式事务
+10、分布式事务  -----------2pc(XA方案,seata)  tcc(Hmily,)  最终一致性(rocketMQ 半事务机制)  最大努力通知(rocketMQ)  EasyTransaction    servicecomb-saga
+    基于消息实现的分布式事务
+    基于补偿实现的分布式事务
+    基于TCC实现的分布式事务
+    基于SAGA实现的分布式事务
+    基于2PC实现的分布式事务
+
+    不同业务场景应按需引入不同的事务形态，在条件允许的情况下，个人建议按照如下次序选择对应的事务形态：
+         单机事务》基于消息的事务》基于补偿的事务》TCC事务
+
 11、写写vue？？
-12、springcloud    zuul
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+springcloud    zuul  zipkin dubbo zookeeper
+cas
+oAuth2.0
+nignx
+
+----------------------------------------------------------------------------------------------------------------------------------
+· 文件存储：Hadoop HDFS
+
+· 离线计算：Hadoop MapReduce、Spark
+
+· 流式、实时计算：Storm、Spark Streaming
+
+· K-V、NOSQL数据库：HBase、Redis、MongoDB
+
+· 资源管理：YARN、Mesos
+
+· 日志收集：Flume、Scribe、Logstash、Kibana
+
+· 消息系统：Kafka、StormMQ、ZeroMQ、RabbitMQ
+
+· 查询分析：Hive、Impala、Presto、Phoenix、SparkSQL、Flink、Kylin、Druid
+
+· 分布式协调服务：Zookeeper
+
+· 集群管理与监控：Ambari、Ganglia、Nagios、Cloudera Manager
+
+· 数据挖掘、机器学习：Mahout、Spark MLLib
+
+· 数据同步：Sqoop
+
+· 任务调度：Oozie
+
+Hadoop HDFS 、 YARN   、 HBase   、 Flink
+
+对比 集群管理与监控：Ambari、Ganglia、Nagios、Cloudera Manager
+
+
+

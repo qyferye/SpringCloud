@@ -28,6 +28,8 @@
         <module>core</module>
         <module>dao</module>
         <module>service</module>
+        <module>springboot</module>
+        <module>datasource-aop</module>
     </modules>
 
     <dependencyManagement>

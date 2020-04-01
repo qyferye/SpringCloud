@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.PayLogMapper1" >
+  <resultMap id="BaseResultMap" type="com.cloud.springboot.dao.entity.PayLog" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="ORDER_NO" property="orderNo" jdbcType="VARCHAR" />
+    <result column="MERCHANTS" property="merchants" jdbcType="VARCHAR" />
+    <result column="TRANSACTION_NO" property="transactionNo" jdbcType="VARCHAR" />
+    <result column="PAY_CHANNEL" property="payChannel" jdbcType="VARCHAR" />
+    <result column="ORDER_TYPE" property="orderType" jdbcType="VARCHAR" />
+    <result column="PAY_PLATFORM_NAME" property="payPlatformName" jdbcType="VARCHAR" />
+    <result column="SOURCE" property="source" jdbcType="VARCHAR" />
+    <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="IS_SYNCH" property="isSynch" jdbcType="VARCHAR" />
+    <result column="INTPUT_RESULT" property="intputResult" jdbcType="LONGVARCHAR" />
+    <result column="OUTPUT_RESULT" property="outputResult" jdbcType="LONGVARCHAR" />
+    <result column="CALLBACK_RESULT" property="callbackResult" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <select id="selectOne" resultMap="BaseResultMap">
+    select * from pay_log where ORDER_NO = #{orderNo} limit 1;
+  </select>
+
+
+
+</mapper>

@@ -1,0 +1,46 @@
+# 配置文件加密key 生产环境中可通过环境变量、命令行等形式进行设置加密数据库密码
+#jasypt:
+#  encryptor:
+#    password: xboot
+server:
+  port: 8989
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 100
+    min-spare-threads: 30
+
+spring:
+  application:
+    name: springboot
+  datasource:
+    test1:
+      jdbc-url: jdbc:mysql://10.0.4.57:3306/dusto_pay?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&netTimeoutForStreamingResults=0&useTimezone=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+      username: pay
+      password: '!Dusto123'
+      driver-class-name: com.mysql.jdbc.Driver
+      type: com.zaxxer.hikari.HikariDataSource
+      connectionTimeout: 30000
+      validationTimeout: 5000
+      maxPoolSize: 200
+      minIdle: 100
+    test2:
+      jdbc-url: jdbc:mysql://172.16.12.116:4000/uat_pay??useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&netTimeoutForStreamingResults=0&useTimezone=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+      username: uat_pay
+      password: '!Dusto123'
+      driver-class-name: com.mysql.jdbc.Driver
+      type: com.zaxxer.hikari.HikariDataSource
+      connectionTimeout: 30000
+      validationTimeout: 5000
+      maxPoolSize: 200
+      minIdle: 100
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: cloud.springboot.dao.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    useGeneratedKeys: true
