@@ -5,8 +5,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cloud.dao.entity.CloudUser;
 import com.cloud.dao.mapper.CloudUserMapper;
 import com.cloud.service.CloudUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * <p>
@@ -17,13 +18,14 @@ import org.springframework.stereotype.Service;
  * @since 2019-11-04
  */
 @Service
+//@DbSource("READ_TEST1")
 public class CloudUserServiceImpl extends ServiceImpl<CloudUserMapper, CloudUser> implements CloudUserService {
-    @Autowired
+    @Resource
     private CloudUserMapper cloudUserMapper;
 
     @Override
-    public CloudUser getById(String id) {
-        return cloudUserMapper.getById(id);
+    public CloudUser getById(Integer id) {
+        return cloudUserMapper.getById(id.toString());
     }
 
     @Override

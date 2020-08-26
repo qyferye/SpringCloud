@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class JWTAuthenticationFilter extends BasicAuthenticationFilter   {
@@ -80,7 +83,9 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter   {
         if(StrUtil.isNotBlank(username)) {
             //Exrick踩坑提醒 此处password不能为null
             User principal = new User(username, "", new ArrayList<>());
-            return new UsernamePasswordAuthenticationToken(principal, null, new ArrayList<>());
+            List<GrantedAuthority> list =new ArrayList<>();
+            list.add(new SimpleGrantedAuthority("ROLE_USER"));
+            return new UsernamePasswordAuthenticationToken(principal, null, list);
         }
         return null;
     }

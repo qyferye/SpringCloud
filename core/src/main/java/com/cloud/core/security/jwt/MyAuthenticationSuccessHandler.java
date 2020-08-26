@@ -38,7 +38,7 @@ public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                     .setSubject(username)
                     //自定义属性 放入用户拥有请求权限
                     //失效时间
-                    .setExpiration(new Date(System.currentTimeMillis() + tokenProperties.getTokenExpireTime() * 60 * 1000))
+                    .setExpiration(new Date(System.currentTimeMillis() + tokenProperties.getTokenExpireTime() * 60 * 10000000))
                     //签名算法和密钥
                     .signWith(SignatureAlgorithm.HS512, SecurityConstant.JWT_SIGN_KEY)
                     .compact();

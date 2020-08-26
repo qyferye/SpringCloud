@@ -1,0 +1,73 @@
+server:
+  port: 8080
+
+
+spring:
+  datasource:
+    name: mysql_test
+    # 下面为连接池的补充设置，应用到上面所有数据源中
+    #通过这句配置将druid连接池引入到我们的配置中，spring会尽可能判断类型是什么，然后根据情况去匹配驱动类。
+    type: com.alibaba.druid.pool.DruidDataSource
+    #druid相关配置
+    druid:
+      #监控统计拦截的filters
+#      stat：Druid内置提供一个StatFilter,用于统计监控信息。如果需要配置访问页面可以参考。
+#      wall：Druid防御SQL注入攻击的WallFilter就是通过Druid的SQL Parser分析。Druid提供的SQL Parser可以在JDBC层拦截SQL做相应处理，比如说分库分表、审计等。
+#      log4j：这个就是日志记录的功能，可以把sql语句打印到log4j供排查问题。
+      filters: stat,wall,slf4j
+      driver-class-name: com.mysql.jdbc.Driver
+      #基本属性
+      url: jdbc:mysql://10.0.4.57:3306/dusto_pay?useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&netTimeoutForStreamingResults=0&useTimezone=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+      username: pay
+      password: '!Dusto123'
+      #配置初始化大小/最小/最大
+      initial-size: 1
+      min-idle: 1
+      max-active: 20
+      #获取连接等待超时时间
+      max-wait: 60000
+      #间隔多久进行一次检测，检测需要关闭的空闲连接
+      time-between-eviction-runs-millis: 60000
+      #一个连接在池中最小生存的时间
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      #打开PSCache，并指定每个连接上PSCache的大小。oracle设为true，mysql设为false。分库分表较多推荐设置为false
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: 20
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000 # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      # 合并多个DruidDataSource的监控数据
+      #use-global-data-source-stat: true
+      #WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+      web-stat-filter:
+        enabled: true #是否启用StatFilter默认值true
+        url-pattern: /*
+        exclusions: /druid/*,*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico
+        session-stat-enable: true
+        session-stat-max-count: 10
+      #StatViewServlet配置，说明请参考Druid Wiki，配置_StatViewServlet配置
+      stat-view-servlet:
+        enabled: true #是否启用StatViewServlet默认值true
+        url-pattern: /druid/*
+        reset-enable: true
+        login-username: druid
+        login-password: druid
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.cloud.mybatis.entity
+  configuration:
+    mapUnderscoreToCamelCase: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    com.cloud.mybatis.mapper: DEBUG
+#pagehelper
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+  returnPageInfo: check

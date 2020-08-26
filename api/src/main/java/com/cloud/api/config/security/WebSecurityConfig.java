@@ -27,7 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 @Slf4j
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(securedEnabled=true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -66,7 +66,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         for(String url:ignoredUrlsProperties.getUrls()){
             registry.antMatchers(url).permitAll();
         }
-
         registry.and()
                 // 表单登录方式
                 .formLogin()
@@ -74,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter(tokenProperties.getUsername())
                 .passwordParameter(tokenProperties.getPassword())
                 // 登录请求url 走 UserDetailsService 验证密码获取token
-                .loginProcessingUrl("/cloud/login")
+                .loginProcessingUrl("/login")
                 .permitAll()
                 // 密码验证成功处理类
                 .successHandler(successHandler)
@@ -109,5 +108,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(imageValidateFilter, UsernamePasswordAuthenticationFilter.class)*/
                 // 添加JWT过滤器 除已配置的其它请求都需经过此过滤器
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), tokenProperties));
+    }
+
+    public static void main(String[] args) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encode = bCryptPasswordEncoder.encode("123");
+        System.out.println(encode);
+        String encode2= bCryptPasswordEncoder.encode("123");
+        System.out.println(encode2);
+        System.out.println(bCryptPasswordEncoder.matches("123", encode));
+        System.out.println(bCryptPasswordEncoder.matches("123", encode2));
     }
 }

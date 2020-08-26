@@ -5,23 +5,19 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.cloud.dao.entity.CloudUser">
         <id column="ID" property="id"/>
-        <result column="USER_NAME" property="userName"/>
-        <result column="IS_DELETED" property="isDeleted"/>
-        <result column="CREATED_BY" property="createdBy"/>
-        <result column="UPDATED_BY" property="updatedBy"/>
-        <result column="DATE_CREATED" property="dateCreated"/>
-        <result column="DATE_UPDATED" property="dateUpdated"/>
-        <result column="REMARK" property="remark"/>
+        <result column="NAME" property="userName"/>
+        <result column="DATE" property="dateCreated"/>
+        <result column="ADDRESS" property="remark"/>
     </resultMap>
     <insert id="insertUser" useGeneratedKeys="true" keyColumn="ID">
-        insert into cloud_user (USER_NAME,IS_DELETED,CREATED_BY,UPDATED_BY,DATE_CREATED,DATE_UPDATED,REMARK)
-        values (#{userName},#{isDeleted},#{createdBy},#{updatedBy},#{dateCreated},#{dateUpdated},#{remark})
+        insert into cloud_user (`NAME`,`DATE`,ADDRESS)
+        values (#{userName},#{dateCreated},#{remark})
     </insert>
     <update id="updateById" parameterType="com.cloud.dao.entity.CloudUser">
-        update cloud_user set USER_NAME = #{userName} where id = #{id}
+        update cloud_user set `NAME` = #{userName} where id = #{id}
     </update>
     <select id="getById" resultMap="BaseResultMap">
-        select * from cloud_user where id = #{id}
+        select  ID, `NAME`,`DATE`,ADDRESS from cloud_user where id = #{id}
     </select>
 
 </mapper>

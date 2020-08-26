@@ -21,7 +21,7 @@ public class DataSourceAop {
     public void before(JoinPoint jp){
         MethodSignature methodSignature = (MethodSignature) jp.getSignature();
         Method method = methodSignature.getMethod();
-        boolean methodlag = method.isAnnotationPresent(Override.class);//可以根据此标记判断方法是否有注解，将数据源切换的注解使用到方法上
+        boolean methodlag = method.isAnnotationPresent(DbSource.class);//可以根据此标记判断方法是否有注解，将数据源切换的注解使用到方法上
         System.out.println("拦截到了" + jp.getSignature().getName() +"方法...");
         Class<?> targetClass = jp.getTarget().getClass();
         boolean flag = targetClass.isAnnotationPresent(DbSource.class);

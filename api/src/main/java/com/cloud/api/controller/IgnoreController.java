@@ -75,7 +75,7 @@ public class IgnoreController {
 
     @ApiOperation(value = "测试getUser")
     @PostMapping(value = "/getUser")
-    public DefaultResult<CloudUser> getUser(@RequestParam("id") String id) {
+    public DefaultResult<CloudUser> getUser(@RequestParam("id") Integer id) {
         CloudUser cloudUser = cloudUserService.getById(id);
         return DefaultResult.success(cloudUser);
     }

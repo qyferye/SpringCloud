@@ -23,10 +23,10 @@ spring:
     time-zone: GMT+8
     serialization:
       fail-on-empty-beans: false
-  boot:
-    admin:
-      client:
-        url: http://127.0.0.1:9090
+#  boot:
+#    admin:
+#      client:
+#        url: http://127.0.0.1:9090
 #  boot:
 #    admin:
 #      # 修改上下文路径
@@ -88,9 +88,40 @@ spring:
 #      nodes: 192.168.131.118:4883,192.168.131.118:4884,192.168.131.118:4885
 #    password: advfafasfsa
 
-# 缓存时长，单位秒
-cache:
-  default-exp: 72
+
+  data:
+    #
+    # elasticsearch
+    #
+    elasticsearch:
+      cluster-nodes: 10.0.4.8:9300,10.0.4.9:9300,10.0.4.10:9300
+      cluster-name: es
+      repositories:
+        enabled: true
+
+
+#rabbitMQ
+  rabbitmq:
+    address: 10.0.4.14:5672,10.0.4.18:5672,10.0.4.19:5672
+    username: mq
+    password: mq
+    virtual-host: /
+    port: 5672
+    listener:
+      simple:
+        acknowledge-mode: manual
+#        retry:
+#          enabled: true
+#          # ms
+#          initial-interval: 1000
+#          multiplier: 1
+#          max-attempts: 3
+#          max-interval: 10000
+#          stateless: true
+#        #  重试次数超过上面的设置之后是否丢弃（false不丢弃时需要写相应代码将该消息加入死信队列）
+#        default-requeue-rejected: true
+
+
 
 
 
@@ -147,17 +178,6 @@ logging:
 logback:
   logFileDir: D:/cloudLog/logs/
   logFile: api
-
-
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: ALWAYS
 
 
 

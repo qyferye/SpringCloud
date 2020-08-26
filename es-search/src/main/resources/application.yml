@@ -1,0 +1,11 @@
+server:
+  port: 8089
+
+spring:
+  data:
+    #
+    # elasticsearch
+    #
+    elasticsearch:
+      cluster-nodes: 172.16.13.245:9300,172.16.13.246:9300,172.16.13.248:9300
+      cluster-name: uat-es-cluster-pressure

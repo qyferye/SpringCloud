@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.springboot.dao.mapper.CloudUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cloud.springboot.dao.entity.CloudUser">
+        <id column="ID" property="id"/>
+        <result column="NAME" property="name"/>
+        <result column="DATE" property="date"/>
+        <result column="ADDRESS" property="address"/>
+    </resultMap>
+    <insert id="insertUser" useGeneratedKeys="true" keyColumn="ID">
+        insert into cloud_user (`NAME`,`DATE`,ADDRESS)
+        values (#{name},#{date},#{address})
+    </insert>
+    <update id="updateById" parameterType="cloud.springboot.dao.entity.CloudUser">
+        update cloud_user set `NAME` = #{name} where id = #{id}
+    </update>
+    <select id="getById" resultMap="BaseResultMap">
+        select  ID, `NAME`,`DATE`,ADDRESS from cloud_user where id = #{id}
+    </select><select id="getAll" resultMap="BaseResultMap">
+    select  ID, `NAME`,`DATE`,ADDRESS from cloud_user
+    </select>
+
+</mapper>

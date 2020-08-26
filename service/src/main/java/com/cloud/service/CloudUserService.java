@@ -14,7 +14,7 @@ import com.cloud.dao.entity.CloudUser;
  */
 public interface CloudUserService extends IService<CloudUser> {//'test_user_'.concat(#p0)
 
-        CloudUser getById(String id);
+        CloudUser getById(Integer id);
 
         // 更新
         boolean updateById(CloudUser cloudUser);

@@ -33,11 +33,11 @@
             <version>${project.version}</version>
         </dependency>
         <!--springboot-admin-client-->
-        <dependency>
+        <!--<dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
             <version>2.0.4</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
