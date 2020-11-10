@@ -47,7 +47,7 @@ AggregationBuilders: 创建聚合函数工具类
 
 BoolQueryBuilder: 拼装连接(查询)条件
 
-QueryBuilders: 简单的静态工厂”导入静态”使用。主要作用是查询条件(关系),如区间\精确\多值等条件
+QueryBuilders: 简单的静态工厂”导入静态”使用。主要作用是查询条件(关系),如区间\精确\多值等条件 创建各种builder
 
 NativeSearchQueryBuilder: 将连接条件和聚合函数等组合
 

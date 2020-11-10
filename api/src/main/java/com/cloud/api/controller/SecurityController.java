@@ -23,7 +23,7 @@ public class SecurityController {
     //@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")//spring注解
 
     public Result<Object> noLogin(){
-        return new ResultUtil<Object>().setSuccessMsg("欢迎cloud！");
+        return new ResultUtil<Object>().setSuccessMsg("欢迎 hello cloud!let's go baby");
     }
 
 }

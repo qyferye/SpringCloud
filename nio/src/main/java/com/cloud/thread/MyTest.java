@@ -19,5 +19,6 @@ public class MyTest {
         public static void main(String[] args) {
             MyTest aa = new MyTest();
             aa.fun1();
+
         }
     }

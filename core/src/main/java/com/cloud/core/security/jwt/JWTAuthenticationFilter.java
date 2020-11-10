@@ -50,8 +50,8 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter   {
         }                                                   //不使用redis存储token                          token不是以  "Bearer "开头
         Boolean notValid = StringUtils.isBlank(header) || !header.startsWith(SecurityConstant.TOKEN_SPLIT);
         if (notValid) {
-            chain.doFilter(request, response);
-           // ResponseUtil.out(response,ResponseUtil.resultMap(false,401,"认证失败,请输入token!"));
+           chain.doFilter(request, response);//会跳登录页面
+           //ResponseUtil.out(response,ResponseUtil.resultMap(false,401,"认证失败,请输入token!"));
             return;
         }
         try {
